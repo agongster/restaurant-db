@@ -241,3 +241,43 @@ Restaurant Tracker
 I ran every menu option on a copy of the script in a scratch folder, so your real `restaurant.db` wasn't touched. Create, the field checks, the duplicate check, read, update, delete and quit all worked. The test showed `[None]` in the update prompts for empty fields, so I changed those to show blank. I didn't rerun the test after that change.
 
 One limit: in Update, pressing Enter keeps the old value, so you can't clear a field back to empty. I can add that if you need it.
+
+---
+
+## Prompt 6
+
+> Add a frontend interface for this database within a page on agongster.github.io (the other folder). this should be added as a new project.
+
+### Output
+
+I added Restaurant Tracker as a new project on the site, at `restaurant-tracker/index.html`, with a card in the Projects section of the homepage.
+
+**How it gets around GitHub Pages**
+
+GitHub Pages only serves static files, so it can't run your Python script or keep a `.db` file on a server. The page uses sql.js instead, which is SQLite compiled to WebAssembly, so it runs a real SQLite database in the browser:
+- It uses the same `CREATE TABLE` as `restaurant_db.py`, constraints included.
+- Every query uses `?` placeholders.
+- The database is saved in each visitor's browser (`localStorage`). A first-time visitor sees six sample restaurants.
+- **Open .db file** loads a `restaurant.db` made by your Python CLI, and **Download .db** saves one the CLI can open. Your real data moves between them this way.
+
+**What's on the page**
+
+- An add/edit form with validation. Duplicates and out-of-range values show a clear message instead of a raw SQLite error.
+- A restaurant table with name search, a cuisine filter, sorting, and Edit and Delete buttons. Delete asks for confirmation first.
+- A count and average rating.
+- A "Last query" panel that shows the SQL that just ran and its parameters, to show off the parameterized queries.
+- Styling from the site's existing theme, including dark/light mode. It's modeled on the Tally page.
+
+**Files**
+
+- New: `restaurant-tracker/index.html`, `style.css`, `app.js`, `README.md`, and `assets/restaurant-tracker-preview.png` (a screenshot of the page).
+- Changed: `index.html`, which has a new project card after Tiny Tides.
+
+**Testing**
+
+I ran the page in headless Chrome with a scripted test, and all 23 checks passed. They covered loading, sample data, add, duplicate and validation errors, an SQL-injection string being saved as plain text, search, filter, sort, edit, delete, and data surviving a reload. I also checked that nothing overflows at phone width. The screenshots turned up two CSS bugs, which I fixed: the site's existing `.star` class clashed with my rating stars, and two cards had lost their padding. I didn't test opening a file made by the Python CLI in the browser. It should work because the schemas match, but it's worth trying once.
+
+**Not done**
+
+- Nothing is committed or pushed. The repo also has uncommitted changes in `fishing-sim/` from before, which I didn't touch, so commit the new files separately from those.
+- The restaurant-db folder isn't in this repo, so the README points to its prompt log without a link.
